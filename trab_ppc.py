@@ -36,9 +36,9 @@ class Skier(Thread):
         self.i = i
 
     def _str_(self):
-        return ('Pessoa {}'.format(self.id))
+        return ('Esquiador {}'.format(self.id))
 
-    def start(self):
+    def run(self):
         #Esquiador chega p/ entrar na fila
         print("Esquiador entra na fila")
         waiting_time = time()
@@ -92,18 +92,13 @@ class Skier(Thread):
 #Se as filas LT e RT estiverem vazias é permitido atender as filas LS e RS até preencher todos as quatro posições.
 #Caso as filas LS e RS estejam vazias é permitido que a cadeira viaje com apenas três pessoas sentadas.
 
-    def enter_elevator(self):
-#        #Garantia que o recurso será liberado após o seu uso
-#        with(self.condition):
-#            while(True):
-#            # Se não for o primeiro da fila, dorme
-#                if(queue.index(self) > 0):
-#                    s = 'Pessoa {} não entrou por não ser o primeiro ' \
-#                        'da fila\n-----'.format(self.i)
-#                    print(s)
-#                    self.condition.wait()
-#                    continue
 
+class Elevator(Thread):
+    def _init_(self, cv):
+        Thread._init_(self)
+        self.condition = cv
+
+    def enter_elevator(self):
         with(self.condition):
             while(True):
                 #Condição p/ Elevador subir apenas com uma tripla
@@ -114,8 +109,8 @@ class Skier(Thread):
 
                 if (random == 0):
                     if (len(LT) > 2 and NUM_SEATS > 2):
-                        for i in range(2):
-                            LT.remove()
+                        for i in range(3):
+                            LT.remove(self)
                             NUM_SEATS = NUM_SEATS - 1
                             #Tempo na fila
                         print("Entrou uma LT")
@@ -124,8 +119,8 @@ class Skier(Thread):
                         continue
                     else:
                         if (len(RT) > 2 and NUM_SEATS > 2):
-                            for i in range(2):
-                                RT.remove()
+                            for i in range(3):
+                                RT.remove(self)
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
                         print("Entrou  uma RT")
@@ -141,7 +136,7 @@ class Skier(Thread):
                         # conferir
                         if (random2):
                             if (len(LS) > 0):
-                                LS.remove()
+                                LS.remove(self)
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
                                 print("Entrou uma LS")
@@ -150,7 +145,7 @@ class Skier(Thread):
                             continue
                         else:
                             if (len(RS) > 0):
-                                RS.remove()
+                                RS.remove(self)
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
                                 print("Entrou uma RS")
@@ -158,15 +153,38 @@ class Skier(Thread):
                             self.condition.wait()
                             continue
                 else:
-                    if (lefttriple):
-                        if (len(RS) > 0):
-                            RS.remove()
-                            NUM_SEATS = NUM_SEATS - 1
-                            #Tempo na fila
+                    if (lefttriple and len(RS) > 0):
+                        RS.remove(self)
+                        NUM_SEATS = NUM_SEATS - 1
+                        #Tempo na fila
                         print("Entrou uma LT e uma RS")
-                    if(righttriple):
-                        if (len(LS) > 0):
-                            LS.remove()
-                            NUM_SEATS = NUM_SEATS - 1
-                            #Tempo na fila
+                        self.condition.wait()
+                        continue
+
+                    if(righttriple and len(LS) > 0):
+                        LS.remove(self)
+                        NUM_SEATS = NUM_SEATS - 1
+                        #Tempo na fila
                         print("Entrou uma RT e uma LS")
+                        self.condition.wait()
+                        continue
+                #Zera a contagem dos bancos, ou seja, chega outro elevador
+                NUM_SEATS = 4
+                self.condition.notify_all()
+
+                #Espera 4 segundos e reinicia o processo
+                sleep(4)
+
+
+
+
+def main():
+    cv = Condition()
+
+    #Inicia a Thread p/ os 120 esquiadores
+    for i in range(NUM_SKIERS):
+        t = Skier(cv, i + 1)
+        t.start()
+
+        #Tempo de espera p/ chegar um novo esquiador
+        sleep(1)

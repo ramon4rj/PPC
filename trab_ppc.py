@@ -1,7 +1,7 @@
 from threading import Condition, Thread
 from time import sleep, time
 from random import choice, randint
-import numpy as np
+#import numpy as np
 
 NUM_SKIERS = 120
 NUM_SEATS = 4
@@ -24,23 +24,23 @@ RS = []
 #4) Escolhe a fila RT
 
 class Timer(Thread):
-    def _init_(self, cv):
-        Thread._init_(self)
+    def __init__(self, cv):
+        Thread.__init__(self)
         self.condition = cv
         self.time = 0
 
 class Skier(Thread):
-    def _init_(self, cv, i):
-        Thread._init_(self)
+    def __init__(self, cv, i):
+        Thread.__init__(self)
         self.condition = cv
         self.i = i
 
-    def _str_(self):
+    def str(self):
         return ('Esquiador {}'.format(self.id))
 
     def run(self):
         #Esquiador chega p/ entrar na fila
-        print("Esquiador entra na fila")
+        print("Esquiador chega na fila")
         waiting_time = time()
 
         #Condições p/ escolha de fila
@@ -48,39 +48,23 @@ class Skier(Thread):
         #Escolhe a fila que vai entrar
         if (len(LS) < 2 * len(LT) and len(LS) < 2 * len(RT) and len(LS) < len(RS)):
             LS.append(self)
-            print("Esquiador entrou na fila LS")
+            print("Esquiador {} entrou na fila LS" .format(self.i))
         elif (len(RS) < 2 * len(LT) and len(RS) < 2 * len(RT) and len(RS) < len(LS)):
             RS.append(self)
-            print("Esquiador entrou na fila RS")
+            print("Esquiador {} entrou na fila RS" .format(self.i))
         elif (len(LT) <= len(RT)):
             LT.append(self)
-            print("Esquiador entrou na fila LT")
+            print("Esquiador {} entrou na fila LT".format(self.i))
         else:
             RT.append(self)
-            print("Esquiador entrou na fila RT")
+            print("Esquiador {} entrou na fila RT" .format(self.i))
+        
+        self.enter_elevator()
 
 
 
     # Atualiza o contador de pessoas
 
-
-#1°) LT e RT tem prioridade if (LT e RT > 2 )
-#    cadeira == ocupada quando
-#           append LT or RT 1 vez and
-#           append RT or RS 1 vez
-#    -LT: while LT <= 2:
-#               servir RT
-#     
-#    if LT and RT <=2:
-#           servir LS e RS até
-#           cadeira == ocupada
-#
-#    if LS and RS == 0:
-#           if cadeira == 3 pessoas
-#                   cadeira viaja
-
-
-#     Se LT estiver "vazia" é colocado em wait() ???
 
 
 #As filas LT e RT tem a prioridade sobre as filas LS e RS que são servidas alternadamente quando ambas não
@@ -93,10 +77,10 @@ class Skier(Thread):
 #Caso as filas LS e RS estejam vazias é permitido que a cadeira viaje com apenas três pessoas sentadas.
 
 
-class Elevator(Thread):
-    def _init_(self, cv):
-        Thread._init_(self)
-        self.condition = cv
+#class Elevator(Thread):
+#    def init(self, cv):
+#        Thread.init(self)
+#        self.condition = cv
 
     def enter_elevator(self):
         with(self.condition):
@@ -105,7 +89,7 @@ class Elevator(Thread):
                 lefttriple = False
                 righttriple = False
 
-                random = randint()
+                random = randint(1,9)
 
                 if (random == 0):
                     if (len(LT) > 2 and NUM_SEATS > 2):
@@ -130,7 +114,7 @@ class Elevator(Thread):
                 #Caso LT e RT estejam vazias
                 if (lefttriple == False and righttriple == False):
                     #Variável de auxílio p/ variar entre as filas
-                    random2 = randint()
+                    random2 = randint(1,9)
                     #Alternar entre RS e LS
                     while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0):
                         # conferir
@@ -182,13 +166,20 @@ def main():
     cv = Condition()
 
     #Inicia a Thread do elevador
-    e = Elevator(cv)
-    e.start()
+    #e = Elevator(None, cv)
+    #e.start()
 
     #Inicia a Thread p/ os 120 esquiadores
-    for i in range(NUM_SKIERS):
+    for i in range(2):
+        print('a')
         t = Skier(cv, i + 1)
         t.start()
 
         #Tempo de espera p/ chegar um novo esquiador
         sleep(1)
+
+    with(cv):
+        cv.notify_all()
+
+if(__name__ == '__main__'):
+    main()

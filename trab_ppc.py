@@ -24,18 +24,18 @@ RS = []
 #4) Escolhe a fila RT
 
 class Timer(Thread):
-    def __init__(self, cv):
-        Thread.__init__(self)
+    def _init_(self, cv):
+        Thread._init_(self)
         self.condition = cv
         self.time = 0
 
 class Skier(Thread):
-    def __init__(self, cv, i):
-        Thread.__init__(self)
+    def _init_(self, cv, i):
+        Thread._init_(self)
         self.condition = cv
         self.i = i
 
-    def __str__(self):
+    def _str_(self):
         return ('Pessoa {}'.format(self.id))
 
     def start(self):
@@ -118,16 +118,20 @@ class Skier(Thread):
                             LT.remove()
                             NUM_SEATS = NUM_SEATS - 1
                             #Tempo na fila
-                        print("Elevador subiu com uma LT")
+                        print("Entrou uma LT")
                         lefttriple = True
+                        self.condition.wait()
+                        continue
                     else:
                         if (len(RT) > 2 and NUM_SEATS > 2):
                             for i in range(2):
                                 RT.remove()
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
-                        print("Elevador subiu com uma RT")
+                        print("Entrou  uma RT")
                         righttriple = True
+                        self.condition.wait()
+                        continue
                 #Caso LT e RT estejam vazias
                 if (lefttriple == False and righttriple == False):
                     #Variável de auxílio p/ variar entre as filas
@@ -140,28 +144,29 @@ class Skier(Thread):
                                 LS.remove()
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
-                                print("Elevador subiu com uma LS")
+                                print("Entrou uma LS")
                             random2 = False
+                            self.condition.wait()
+                            continue
                         else:
                             if (len(RS) > 0):
                                 RS.remove()
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
-                                print("Elevador subiu com uma RS")
+                                print("Entrou uma RS")
                             random2 = True
+                            self.condition.wait()
+                            continue
                 else:
                     if (lefttriple):
                         if (len(RS) > 0):
                             RS.remove()
                             NUM_SEATS = NUM_SEATS - 1
                             #Tempo na fila
-                        print("Elevador subiu com uma LT e uma RS")
+                        print("Entrou uma LT e uma RS")
                     if(righttriple):
                         if (len(LS) > 0):
                             LS.remove()
                             NUM_SEATS = NUM_SEATS - 1
                             #Tempo na fila
-                        print("Elevador subiu com uma RT e uma LS")
-
-
-
+                        print("Entrou uma RT e uma LS")

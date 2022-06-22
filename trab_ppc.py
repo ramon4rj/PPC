@@ -181,6 +181,10 @@ class Elevator(Thread):
 def main():
     cv = Condition()
 
+    #Inicia a Thread do elevador
+    e = Elevator(cv)
+    e.start()
+
     #Inicia a Thread p/ os 120 esquiadores
     for i in range(NUM_SKIERS):
         t = Skier(cv, i + 1)

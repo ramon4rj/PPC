@@ -4,13 +4,14 @@ from random import choice, randint
 #import numpy as np
 
 NUM_SKIERS = 120
-NUM_SEATS = 4
-#queue = []
+#NUM_SEATS = 4
+
 LS = []
 LT = []
 RT = []
 RS = []
 
+print('b')
 
 #1) Escolhe a fila LS se o tamanho da fila LS for:
     #a) Menor que 2 * tamanho da fila LT, E
@@ -34,6 +35,8 @@ class Skier(Thread):
         Thread.__init__(self)
         self.condition = cv
         self.i = i
+        #self.NUM_SEATS = 4
+
 
     def str(self):
         return ('Esquiador {}'.format(self.id))
@@ -49,7 +52,7 @@ class Skier(Thread):
         if (len(LS) < 2 * len(LT) and len(LS) < 2 * len(RT) and len(LS) < len(RS)):
             LS.append(self)
             print("Esquiador {} entrou na fila LS" .format(self.i))
-        elif (len(RS) < 2 * len(LT) and len(RS) < 2 * len(RT) and len(RS) < len(LS)):
+        elif (len(RS) < 2 * len(LT) and len(RS) < 2 * len(RT) and len(RS) <= len(LS)):
             RS.append(self)
             print("Esquiador {} entrou na fila RS" .format(self.i))
         elif (len(LT) <= len(RT)):
@@ -58,7 +61,10 @@ class Skier(Thread):
         else:
             RT.append(self)
             print("Esquiador {} entrou na fila RT" .format(self.i))
-        
+        #print('LT')
+        #print(LT)
+        #print("RT: ")
+        #print(RT)
         self.enter_elevator()
 
 
@@ -81,15 +87,17 @@ class Skier(Thread):
 #    def init(self, cv):
 #        Thread.init(self)
 #        self.condition = cv
+#        self.NUM_SEATS = 4
 
     def enter_elevator(self):
+        NUM_SEATS = 4
         with(self.condition):
             while(True):
                 #Condição p/ Elevador subir apenas com uma tripla
                 lefttriple = False
                 righttriple = False
 
-                random = randint(1,9)
+                random = randint(1,2)
 
                 if (random == 0):
                     if (len(LT) > 2 and NUM_SEATS > 2):
@@ -114,17 +122,18 @@ class Skier(Thread):
                 #Caso LT e RT estejam vazias
                 if (lefttriple == False and righttriple == False):
                     #Variável de auxílio p/ variar entre as filas
-                    random2 = randint(1,9)
+                    random2 = randint(1,2)
+                    aux = random2 == 0
                     #Alternar entre RS e LS
                     while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0):
                         # conferir
-                        if (random2):
+                        if (aux == True):
                             if (len(LS) > 0):
                                 LS.remove(self)
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
                                 print("Entrou uma LS")
-                            random2 = False
+                            aux = False
                             self.condition.wait()
                             continue
                         else:
@@ -133,11 +142,11 @@ class Skier(Thread):
                                 NUM_SEATS = NUM_SEATS - 1
                                 #Tempo na fila
                                 print("Entrou uma RS")
-                            random2 = True
+                            aux = True
                             self.condition.wait()
                             continue
                 else:
-                    if (lefttriple and len(RS) > 0):
+                    if (lefttriple == True and len(RS) > 0):
                         RS.remove(self)
                         NUM_SEATS = NUM_SEATS - 1
                         #Tempo na fila
@@ -145,7 +154,7 @@ class Skier(Thread):
                         self.condition.wait()
                         continue
 
-                    if(righttriple and len(LS) > 0):
+                    if(righttriple == True and len(LS) > 0):
                         LS.remove(self)
                         NUM_SEATS = NUM_SEATS - 1
                         #Tempo na fila
@@ -170,8 +179,7 @@ def main():
     #e.start()
 
     #Inicia a Thread p/ os 120 esquiadores
-    for i in range(2):
-        print('a')
+    for i in range(15):
         t = Skier(cv, i + 1)
         t.start()
 

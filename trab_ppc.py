@@ -60,11 +60,12 @@ class Skier(Thread):
         else:
             RT.append(self)
             print("Esquiador {} entrou na fila RT" .format(self.i))
-        #print('LT')
-        #print(LT)
-        #print("RT: ")
-        #print(RT)
+        
         self.enter_elevator()
+        sleep(4)
+        print("Elevator saiu")
+        self.elevator_leave()
+
 
 
 
@@ -102,13 +103,15 @@ class Skier(Thread):
                         for i in range(3, 0, -1):
                             LT.remove(LT[i-1])
                             NUM_SEATS = NUM_SEATS - 1
+                            #self.NUM_SEATS = self.NUM_SEATS - 1
                             #Tempo na fila
                             elevator.append(self)
                             print("deu append LT")
-                        print("Saiu uma LT")
+                        print("Saiu da fila LT")
                         print("num seats1: ")
                         print(NUM_SEATS)
                         #print(ls)
+                        elevator.print_elevator()
                         lefttriple = True
                         self.condition.wait()
                         continue
@@ -117,10 +120,11 @@ class Skier(Thread):
                             for i in range(3, 0, -1):
                                 RT.remove(RT[i-1])
                                 NUM_SEATS = NUM_SEATS - 1
+                                #self.NUM_SEATS = self.NUM_SEATS - 1
                                 #Tempo na fila
                                 elevator.append(self)
                                 print("deu append RT")
-                            print("Saiu uma RT")
+                            print("Saiu da fila RT")
                             print("num seats2: ")
                             print(NUM_SEATS)
                             righttriple = True
@@ -139,11 +143,12 @@ class Skier(Thread):
                             if (len(LS) > 0):
                                 LS.remove(LS[0])
                                 NUM_SEATS = NUM_SEATS - 1
+                                #self.NUM_SEATS = self.NUM_SEATS - 1
                                 #Tempo na fila
                                 
                                 elevator.append(self)
                                 print("deu append LS")
-                                print("Saiu uma LS")
+                                print("Saiu da fila LS")
                                 print("Num seats3: ")
                                 print(NUM_SEATS)
                             aux = False
@@ -153,19 +158,22 @@ class Skier(Thread):
                             if (len(RS) > 0):
                                 RS.remove(RS[0])
                                 NUM_SEATS = NUM_SEATS - 1
+                                #self.NUM_SEATS = self.NUM_SEATS - 1
                                 #Tempo na fila
                                 elevator.append(self)
                                 print("deu append RS")
-                                print("Saiu uma RS")
+                                print("Saiu da fila RS")
                                 print("num seats4: ")
                                 print(NUM_SEATS)
+                                elevator.print_elevator()
                             aux = True
                             self.condition.wait()
                             continue
                 else:
                     if (lefttriple == True and len(RS) > 0):
                         RS.remove(self)
-                        NUM_SEATS = NUM_SEATS - 1
+                        #NUM_SEATS = NUM_SEATS - 1
+                        self.NUM_SEATS = self.NUM_SEATS - 1
                         #Tempo na fila
                         print("Saiu uma LT e uma RS")
                         elevator.append(self)
@@ -174,7 +182,8 @@ class Skier(Thread):
 
                     if(righttriple == True and len(LS) > 0):
                         LS.remove(self)
-                        NUM_SEATS = NUM_SEATS - 1
+                        #NUM_SEATS = NUM_SEATS - 1
+                        self.NUM_SEATS = self.NUM_SEATS - 1
                         #Tempo na fila
                         print("Saiu uma RT e uma LS")
                         elevator.append(self)
@@ -190,7 +199,13 @@ class Skier(Thread):
                     self.condition.notify_all()
 
                 #Espera 4 segundos e reinicia o processo
-                sleep(4)
+                #sleep(4)
+
+
+    def elevator_leave(self):
+        elevator.remove(self)
+
+
 
 class Elevator(Thread):
     def __init__(self, NUM_SEATS):
@@ -205,7 +220,8 @@ class Elevator(Thread):
         self.seats.remove(s)
 
     def print_elevator(self):
-        print(self.NUM_SEATS)
+        print("Assentos disponíveis: ")
+        print(self.seats)
 
     
 elevator = Elevator(NUM_SEATS = NUM_SEATS)

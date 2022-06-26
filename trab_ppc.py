@@ -211,9 +211,8 @@ class Skier(Thread):
 
 
 
-class Elevator(Thread):
+class Elevator:
     def __init__(self, NUM_SEATS):
-        Thread.__init__(self)
         self.seats = []
         self.NUM_SEATS = NUM_SEATS
     

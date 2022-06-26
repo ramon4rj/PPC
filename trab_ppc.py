@@ -1,7 +1,7 @@
 from threading import Condition, Thread
 from time import sleep, time
 from random import choice, randint
-#import numpy as np
+import numpy as np
 
 NUM_SKIERS = 120
 NUM_SEATS = 4
@@ -61,32 +61,15 @@ class Skier(Thread):
             RT.append(self)
             print("Esquiador {} entrou na fila RT" .format(self.i))
         
+        #self.enter_elevator()
+            #sleep(5)
+        
         self.enter_elevator()
-        sleep(4)
-        print("Elevator saiu")
+        sleep(5)
         self.elevator_leave()
 
 
 
-
-    # Atualiza o contador de pessoas
-
-
-#As filas LT e RT tem a prioridade sobre as filas LS e RS que são servidas alternadamente quando ambas não
-#estão vazias. Quer dizer, se LT está vazio, vai servir RT seguidamente até ter pessoas suficiente na fila LT. Se as
-#filas LT ou RT tiver uma ou duas pessoas, ela é considerada vazia, é necessário ter um mínimo de três pessoas
-#para servir as filas LT e RT.
-#Como a cadeira tem quatro lugares, a quarta posição será ocupada por um esquiador das filas LS ou RS
-#alternadamente. Novamente, se uma fila estiver vazia, a outra fila é servida continuamente.
-#Se as filas LT e RT estiverem vazias é permitido atender as filas LS e RS até preencher todos as quatro posições.
-#Caso as filas LS e RS estejam vazias é permitido que a cadeira viaje com apenas três pessoas sentadas.
-
-
-#class Elevator(Thread):
-#    def init(self, cv):
-#        Thread.init(self)
-#        self.condition = cv
-#        self.NUM_SEATS = 4
 
     def enter_elevator(self):
         NUM_SEATS = 4
@@ -106,7 +89,10 @@ class Skier(Thread):
                             #self.NUM_SEATS = self.NUM_SEATS - 1
                             #Tempo na fila
                             elevator.append(self)
-                            print("deu append LT")
+                            #print("deu append LT")
+                        #LT = LT[:len(self.seats)-2]
+                        #NUM_SEATS = NUM_SEATS - 1
+                        elevator.append(self)
                         print("Saiu da fila LT")
                         print("num seats1: ")
                         print(NUM_SEATS)
@@ -124,6 +110,7 @@ class Skier(Thread):
                                 #Tempo na fila
                                 elevator.append(self)
                                 print("deu append RT")
+                                #elevator.remove(self)
                             print("Saiu da fila RT")
                             print("num seats2: ")
                             print(NUM_SEATS)
@@ -148,6 +135,7 @@ class Skier(Thread):
                                 
                                 elevator.append(self)
                                 print("deu append LS")
+                                #elevator.remove(self)
                                 print("Saiu da fila LS")
                                 print("Num seats3: ")
                                 print(NUM_SEATS)
@@ -162,6 +150,7 @@ class Skier(Thread):
                                 #Tempo na fila
                                 elevator.append(self)
                                 print("deu append RS")
+                                #elevator.remove(self)
                                 print("Saiu da fila RS")
                                 print("num seats4: ")
                                 print(NUM_SEATS)
@@ -194,16 +183,31 @@ class Skier(Thread):
                 print("chegou no notify all")
                 #elevator.append(self)
 
-                NUM_SEATS = 4
-                with(self.condition):
-                    self.condition.notify_all()
+                break
+
+            NUM_SEATS = 4
+            with(self.condition):
+                self.condition.notify_all()
 
                 #Espera 4 segundos e reinicia o processo
                 #sleep(4)
+                #break
 
 
     def elevator_leave(self):
-        elevator.remove(self)
+        if len(elevator.seats) > 3:
+            print("chegou elvator leave")
+            #print(ls)
+            with(self.condition):
+                elevator.seats = elevator.seats[:len(elevator.seats)-2]
+                self.condition.notify_all()
+            #while len(self.seats) != 0:
+            #for i in range(3, 0, -1):
+                #with(self.condition):
+                    #elevator.remover(self)
+                    #elevator.pop(i)
+                    #elevator.self.seats.remover() 
+                    #self.condition.notify_all()
 
 
 
@@ -216,7 +220,7 @@ class Elevator(Thread):
     def append(self, s):
         self.seats.append(s)
 
-    def remove(self, s):
+    def remover(self, s):
         self.seats.remove(s)
 
     def print_elevator(self):

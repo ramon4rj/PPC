@@ -53,24 +53,34 @@ class Skier(Thread):
             LS.append(self)
             print("Esquiador {} entrou na fila LS" .format(self.i))
             print(" ")
+            #self.condition.wait()
         elif (len(RS) < 2 * len(LT) and len(RS) < 2 * len(RT) and len(RS) <= len(LS)):
             RS.append(self)
             print("Esquiador {} entrou na fila RS" .format(self.i))
             print(" ")
+            #self.condition.wait()
 
         elif (len(LT) <= len(RT)):
             LT.append(self)
             print("Esquiador {} entrou na fila LT".format(self.i))
             print(" ")
+            #self.condition.wait()
         else:
             RT.append(self)
             print("Esquiador {} entrou na fila RT" .format(self.i))
             print(" ")
+            #self.condition.wait()
         
         #self.enter_elevator()
             #sleep(5)
         
         self.enter_elevator()
+        self.print_filas()
+        sleep(5)
+        self.elevator_leave()
+
+
+    def print_filas(self):
         print("Fila LT: {}" .format(LT))
         print(" ")
         print("Fila RT: {}" .format(RT))
@@ -79,11 +89,6 @@ class Skier(Thread):
         print(" ")
         print("Fila RS: {}" .format(RS))
         print(" ")
-
-        sleep(5)
-        self.elevator_leave()
-
-
 
 
     def enter_elevator(self):
@@ -147,7 +152,7 @@ class Skier(Thread):
                     random2 = randint(0,2)
                     aux = random2 == 0
                     #Alternar entre RS e LS
-                    while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0):
+                    while ((NUM_SEATS > 0 and len(LS) > 0) or len(RS) > 0):
                         # conferir
                         
                         if (aux == True):

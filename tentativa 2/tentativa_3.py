@@ -12,10 +12,10 @@ RT = []
 RS = []
 
 class Skier(Thread):
-    def __init__(self, cv):
+    def __init__(self, cv, i):
         Thread.__init__(self)
         self.condition = cv
-        #self.i = i
+        self.i = i
 
 #    def Skier(self):
 #        self.skier = self
@@ -30,23 +30,24 @@ class Skier(Thread):
 
         #Escolhe a fila que vai entrar
         if (len(LS) < 2 * len(LT) and len(LS) < 2 * len(RT) and len(LS) < len(RS)):
-            LS.append(self)
-            print("Esquiador {} entrou na fila LS" .format(self))
+            LS.append(self.i)
+            #print("Esquiador {} entrou na fila LS" .format(self))
+            print("Esquiador {} entrou na fila LS" .format(self.i))
             print(" ")
 
         elif (len(RS) < 2 * len(LT) and len(RS) < 2 * len(RT) and len(RS) <= len(LS)):
-            RS.append(self)
-            print("Esquiador {} entrou na fila RS" .format(self))
+            RS.append(self.i)
+            print("Esquiador {} entrou na fila RS" .format(self.i))
             print(" ")
 
         elif (len(LT) <= len(RT)):
-            LT.append(self)
-            print("Esquiador {} entrou na fila LT".format(self))
+            LT.append(self.i)
+            print("Esquiador {} entrou na fila LT".format(self.i))
             print(" ")
 
         else:
-            RT.append(self)
-            print("Esquiador {} entrou na fila RT" .format(self))
+            RT.append(self.i)
+            print("Esquiador {} entrou na fila RT" .format(self.i))
             print(" ")
 
 
@@ -117,10 +118,12 @@ class Elevator(Thread):
                     #aux = random2 == 0
 
                     flag = choice(["LS", "RS"])
+                    print("Flag: {}" .format(flag))
 
                     #Alternar entre RS e LS
                     while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0):
                         # conferir
+                        #print("Flag: {}" .format(flag))
                         
                         if (flag == "LS"):
                             if (len(LS) > 0):
@@ -196,15 +199,16 @@ class SkiProblem():
     def main(): 
         cv = Condition()
 
-            #e = Elevator(cv)
-            #e.start()
+        #e = Elevator(cv)
+        #e.start()
 
-        while (True):
+#        while (True):
+        for i in range(120):
             e = Elevator(cv)
             e.start()
 
             #Cria um novo esquiador
-            t = Skier(cv)
+            t = Skier(cv, i)
             t.start()
 
             sleep(1)

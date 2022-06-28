@@ -71,9 +71,10 @@ class Elevator(Thread):
                 #Condição p/ Elevador subir apenas com uma tripla
                 lefttriple = False
                 righttriple = False
-                print('a')
+                #print('a')
                 random = randint(0,1)
                 #random = 0
+                print("random: {}" .format(random))
                 if (random == 0):
                     print("Checagem Condicional 1")
                     if (len(LT) > 2 and NUM_SEATS > 2):
@@ -82,7 +83,7 @@ class Elevator(Thread):
                             LT.pop()
                             NUM_SEATS = NUM_SEATS - 1
                             #Tempo na fila
-                        
+                            
                         #LT = LT[:len(LT)-2]         #### Exception 
 
 
@@ -93,7 +94,7 @@ class Elevator(Thread):
                         lefttriple = True
                         self.condition.wait()
                         continue
-                    else:
+                    elif(lefttriple == False):  #LT vazio -> serve RT até ter pessoas suficientes em LT
                         print("Checagem Condicional 2")
                         if (len(RT) > 2 and NUM_SEATS > 2):
                             for i in range(3, 0, -1):
@@ -112,21 +113,22 @@ class Elevator(Thread):
                             continue
                 #Caso LT e RT estejam vazias
                 if (lefttriple == False and righttriple == False):
-                    #Variável de auxílio p/ variar entre as filas
+                    #Variáveis de auxílio p/ variar entre as filas
                     
-                    #random2 = randint(0,1)
-                    #aux = random2 == 0
+                    leftsingle = False
+                    rightsingle = False
 
                     flag = choice(["LS", "RS"])
                     print("Flag: {}" .format(flag))
+                    
 
                     #Alternar entre RS e LS
-                    while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0):
+                    #while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0): #Enquanto houver assentos disponíveis e LS e RS > 0
+                    while (NUM_SEATS > 0):  #Enquanto houver assentos disponíveis e LS e RS > 0
                         # conferir
-                        #print("Flag: {}" .format(flag))
                         
                         if (flag == "LS"):
-                            if (len(LS) > 0):
+                            if (len(LS) > 0):   #Incluir rightsingle aqui ?????
                                 #LS.remove(LS[0])
                                 LS.pop()
                                 NUM_SEATS = NUM_SEATS - 1
@@ -137,10 +139,10 @@ class Elevator(Thread):
                                 #print("Num seats3: ")
                                 #print(NUM_SEATS)
 
-                            #aux = False
+                            leftsingle = True
                             self.condition.wait()
                             continue
-                        elif (flag == "RS"):
+                        elif (flag == "RS" or leftsingle == True):
                             if (len(RS) > 0):
                                 #RS.remove(RS[0])
                                 RS.pop()
@@ -153,11 +155,12 @@ class Elevator(Thread):
                                 #print("num seats4: ")
                                 #print(NUM_SEATS)
                                 
-                            #aux = True
+                            rightsingle = True
                             self.condition.wait()
                             continue
                 else:
-                    if (lefttriple == True and len(RS) > 0):
+                    #if (lefttriple == True and len(RS) > 0):
+                    if (lefttriple == True and rightsingle == True):      #nao da
                         #RS.remove(self)
                         RS.pop()
                         NUM_SEATS = NUM_SEATS - 1
@@ -168,7 +171,8 @@ class Elevator(Thread):
                         self.condition.wait()
                         continue
 
-                    if(righttriple == True and len(LS) > 0):
+                    #if(righttriple == True and len(LS) > 0):
+                    if (righttriple == True and leftsingle == True):
                         #LS.remove(self)
                         LS.pop()
                         NUM_SEATS = NUM_SEATS - 1
@@ -184,13 +188,17 @@ class Elevator(Thread):
                 #elevator.append(self)
 
                 break
+            #sleep(4)
 
             NUM_SEATS = 4
             with(self.condition):
                 self.condition.notify_all()
+                print("######## SLEEP ########")
+            sleep(4)
 
             #Espera 4 segundos e reinicia o processo
-            sleep(4)
+            #print("chegou no SLEEP ")
+            #sleep(4)
                 #break
 
 
@@ -198,23 +206,34 @@ class SkiProblem():
 
     def main(): 
         cv = Condition()
+        i = 0
 
         #e = Elevator(cv)
         #e.start()
 
-#        while (True):
-        for i in range(120):
-            e = Elevator(cv)
-            e.start()
-
-            #Cria um novo esquiador
-            t = Skier(cv, i)
-            t.start()
-
-            sleep(1)
-
+        while (True):
             with(cv):
-                cv.notify_all()
+                i = i + 1
+                t = Skier(cv, i)
+                t.start()
+                sleep(1)
+
+                e = Elevator(cv)
+                e.start()
+                sleep(4)
+#        for i in range(120):
+#            e = Elevator(cv)
+#            e.start()
+
+#            #Cria um novo esquiador
+#            t = Skier(cv, i)
+#            t.start()
+
+#            sleep(1)
+#
+#            with(cv):
+#                cv.notify_all()
+
 
 #if(__name__ == '__main__'):
 #    main()

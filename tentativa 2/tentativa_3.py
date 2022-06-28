@@ -51,18 +51,18 @@ class Skier(Thread):
 
 
         print("Fila LT: {}" .format(LT))
-#        print("Fila RT: {}" .format(RT))
-#        print("Fila LS: {}" .format(LS))
-#        print("Fila RS: {}" .format(RS))
+        print("Fila RT: {}" .format(RT))
+        print("Fila LS: {}" .format(LS))
+        print("Fila RS: {}" .format(RS))
 
 class Elevator(Thread):
-    print('i')
+    #print('i')
     def __init__(self, cv):
         Thread.__init__(self)
         self.condition = cv
         #self.i = i
 
-    def run_elevator(self):
+    def run(self):
         print("chegou aqui")
         NUM_SEATS = 4
         with(self.condition):
@@ -112,13 +112,17 @@ class Elevator(Thread):
                 #Caso LT e RT estejam vazias
                 if (lefttriple == False and righttriple == False):
                     #Variável de auxílio p/ variar entre as filas
-                    random2 = randint(0,1)
-                    aux = random2 == 0
+                    
+                    #random2 = randint(0,1)
+                    #aux = random2 == 0
+
+                    flag = choice(["LS", "RS"])
+
                     #Alternar entre RS e LS
                     while (NUM_SEATS > 0 and (len(LS) > 0 or len(RS)) > 0):
                         # conferir
                         
-                        if (aux == True):
+                        if (flag == "LS"):
                             if (len(LS) > 0):
                                 #LS.remove(LS[0])
                                 LS.pop()
@@ -130,10 +134,10 @@ class Elevator(Thread):
                                 #print("Num seats3: ")
                                 #print(NUM_SEATS)
 
-                            aux = False
+                            #aux = False
                             self.condition.wait()
                             continue
-                        else:
+                        elif (flag == "RS"):
                             if (len(RS) > 0):
                                 #RS.remove(RS[0])
                                 RS.pop()
@@ -146,7 +150,7 @@ class Elevator(Thread):
                                 #print("num seats4: ")
                                 #print(NUM_SEATS)
                                 
-                            aux = True
+                            #aux = True
                             self.condition.wait()
                             continue
                 else:
@@ -192,11 +196,10 @@ class SkiProblem():
     def main(): 
         cv = Condition()
 
-        #e = Elevator(cv)
-        #e.start()
+            #e = Elevator(cv)
+            #e.start()
 
         while (True):
-            print('kkjjk')
             e = Elevator(cv)
             e.start()
 
@@ -210,5 +213,6 @@ class SkiProblem():
                 cv.notify_all()
 
 #if(__name__ == '__main__'):
+#    main()
 s = SkiProblem
 s.main()

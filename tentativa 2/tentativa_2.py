@@ -11,6 +11,12 @@ LT = []
 RT = []
 RS = []
 
+def print_filas():
+    print("Fila LT: {}" .format(LT))
+    print("Fila RT: {}" .format(RT))
+    print("Fila LS: {}" .format(LS))
+    print("Fila RS: {}" .format(RS))
+
 class Skier(Thread):
     def __init__(self, cv, i):
         Thread.__init__(self)
@@ -51,10 +57,11 @@ class Skier(Thread):
             print(" ")
 
 
-        print("Fila LT: {}" .format(LT))
-        print("Fila RT: {}" .format(RT))
-        print("Fila LS: {}" .format(LS))
-        print("Fila RS: {}" .format(RS))
+#    def print_filas():
+#        print("Fila LT: {}" .format(LT))
+#        print("Fila RT: {}" .format(RT))
+#        print("Fila LS: {}" .format(LS))
+#        print("Fila RS: {}" .format(RS))
 
 class Elevator(Thread):
     #print('i')
@@ -83,8 +90,10 @@ class Elevator(Thread):
                     if (len(LT) > 2 and NUM_SEATS > 2):
                         for i in range(0, 3):
                             #LT.remove(LT[i-1])
-                            LT.pop(i)
+                            LT.pop(0)
+                            print("i: {}" .format(i))
                             NUM_SEATS = NUM_SEATS - 1
+                            print_filas()
                             #Tempo na fila
                                     
                                 #LT = LT[:len(LT)-2]         #### Exception 
@@ -103,8 +112,10 @@ class Elevator(Thread):
                         if (len(RT) > 2 and NUM_SEATS > 2):
                             print("akontece")
                             for i in range(0, 3):
-                                RT.pop(i)
+                                RT.pop(0)
+                                print("i: {}" .format(i))
                                 NUM_SEATS = NUM_SEATS - 1
+                                print_filas()
                                         
                                 #Tempo na fila
                                     
@@ -130,8 +141,9 @@ class Elevator(Thread):
                         
                         if (flag == "LS"):
                             if (len(LS) > 0):   #Incluir rightsingle aqui ?????
-                                LS.pop()
+                                LS.pop(0)
                                 NUM_SEATS = NUM_SEATS - 1
+                                print_filas()
                                 #Tempo na fila
 
                                 print("Saiu da fila LS")
@@ -141,8 +153,9 @@ class Elevator(Thread):
                             continue
                         elif (flag == "RS" or leftsingle == True):
                             if (len(RS) > 0):
-                                RS.pop()
+                                RS.pop(0)
                                 NUM_SEATS = NUM_SEATS - 1
+                                print_filas()
                                 #Tempo na fila
 
 
@@ -154,8 +167,9 @@ class Elevator(Thread):
                 else:
                     #if (lefttriple == True and len(RS) > 0):
                     if (lefttriple == True and rightsingle == True):      #nao da
-                        RS.pop()
+                        RS.pop(0)
                         NUM_SEATS = NUM_SEATS - 1
+                        print_filas()
                         #Tempo na fila
                         print("Saiu uma LT e uma RS")
                         
@@ -164,8 +178,9 @@ class Elevator(Thread):
 
                     #if(righttriple == True and len(LS) > 0):
                     if (righttriple == True and leftsingle == True):
-                        LS.pop()
+                        LS.pop(0)
                         NUM_SEATS = NUM_SEATS - 1
+                        print_filas()
                         #Tempo na fila
                         print("Saiu uma RT e uma LS")
                         
@@ -204,7 +219,7 @@ class SkiProblem():
 
                 e = Elevator(cv)
                 e.start()
-                sleep(4)
+                sleep(1)
 
                 #cv.notify_all()
 #        for i in range(120):

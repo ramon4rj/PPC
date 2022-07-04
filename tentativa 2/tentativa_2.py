@@ -145,8 +145,7 @@ class Elevator(Thread):
                                 print_filas_len()
 
                             leftsingle = True
-                            #self.condition.wait()
-                            Condition.wait(self)
+                            self.condition.wait()
                             #continue
                         elif (flag == "RS" or leftsingle == True):
                             if (len(RS) > 0):
@@ -158,8 +157,7 @@ class Elevator(Thread):
                                 print_filas_len()
                                 
                             rightsingle = True
-                            #self.condition.wait()
-                            Condition.wait(self)
+                            self.condition.wait()
                             #continue
                 else:
                     #if (lefttriple == True and len(RS) > 0):

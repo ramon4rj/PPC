@@ -159,6 +159,13 @@ class Elevator(Thread):
                             rightsingle = True
                             self.condition.wait()
                             #continue
+
+                        cont_elevador.append(cont)
+                        #Fim da checagem de condições
+                        with(self.condition):
+                            self.condition.notify_all()
+                        
+                        break
                 else:
                     #if (lefttriple == True and len(RS) > 0):
                     if (lefttriple == True and rightsingle == True):

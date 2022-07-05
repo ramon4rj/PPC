@@ -5,7 +5,8 @@ import numpy as np
 
 NUM_SKIERS = 120
 #NUM_SEATS = 4
-cont_elevador = []
+cont_skier = []
+cont_elevator = []
 
 LS = []
 LT = []
@@ -82,6 +83,7 @@ class Elevator(Thread):
         #self.i = i
 
     def run(self):
+        cont_skier.append(1)
         NUM_SEATS = 4
         with(self.condition):
             while(True):
@@ -90,6 +92,7 @@ class Elevator(Thread):
                 righttriple = False
 
                 flag0 = choice(["LT", "RT"])
+                #print("CHEGOU 1")
 
                 if (flag0 == "LT"):
                     if (len(LT) > 2 and NUM_SEATS > 2):
@@ -106,7 +109,9 @@ class Elevator(Thread):
 
                         lefttriple = True
                         self.condition.wait()
-                        #continue
+                        #print("CHEGOU 2")
+                        continue
+                        print("CHEGOU 2")
                     #elif(lefttriple == False):  #LT vazio -> serve RT até ter pessoas suficientes em LT
                     elif(lefttriple == False):
                         if (len(RT) > 2 and NUM_SEATS > 2):
@@ -121,9 +126,10 @@ class Elevator(Thread):
                                     
                             righttriple = True
                             self.condition.wait()
-                            #continue
+                            continue
+                        #print("CHEGOU 3")
                 #Caso LT e RT estejam vazias
-                if (lefttriple == False and righttriple == False):
+                elif (lefttriple == False and righttriple == False):
 
                     #Variáveis de auxílio p/ variar entre as filas
                     leftsingle = False
@@ -146,7 +152,7 @@ class Elevator(Thread):
 
                             leftsingle = True
                             self.condition.wait()
-                            #continue
+                            continue
                         elif (flag == "RS" or leftsingle == True):
                             if (len(RS) > 0):
                                 RS.pop(0)
@@ -155,18 +161,23 @@ class Elevator(Thread):
                                 print(" ")
                                 print("Saiu da fila RS")
                                 print_filas_len()
-                                
+
                             rightsingle = True
                             self.condition.wait()
-                            #continue
+                            continue
+                            print("aqui era pra chegar k")
 
-                        cont_elevador.append(cont)
-                        #Fim da checagem de condições
-                        with(self.condition):
-                            self.condition.notify_all()
-                        
-                        break
-                else:
+
+
+                    #cont_skier.append(cont)
+                #print("chegou aq")
+                #Fim da checagem de condições
+                cont_elevator.append(1)
+                with(self.condition):
+                    self.condition.notify_all()
+                                        
+                break
+'''                else:
                     #if (lefttriple == True and len(RS) > 0):
                     if (lefttriple == True and rightsingle == True):
                         RS.pop(0)
@@ -175,9 +186,9 @@ class Elevator(Thread):
                         print(" ")
                         print("Saiu uma LT e uma RS")
                         print_filas_len()
-                        
+                            
                         self.condition.wait()
-                        #continue
+                        continue
 
                     #if(righttriple == True and len(LS) > 0):
                     if (righttriple == True and leftsingle == True):
@@ -187,27 +198,27 @@ class Elevator(Thread):
                         print(" ")
                         print("Saiu uma RT e uma LS")
                         print_filas_len()
-                        
+                            
                         self.condition.wait()
-                        #continue
-                print("AQ ")
-                cont = cont + 1
-                cont_elevador.append(cont)
+                        continue
+                #print("AQ ")
+                #cont = cont + 1
+                #cont_elevador.append(cont)
                 #Fim da checagem de condições
-                with(self.condition):
-                    self.condition.notify_all()
-                
-                break
+                #with(self.condition):
+                #    self.condition.notify_all()
+                    
+                #break
 
             #cont_elevador = cont_elevador + 1
-            cont_elevador.append(1)
+            cont_skier.append(1)
             #print("appendeus ")
             #NUM_SEATS = 4
             #print("NUM SEATS: {}" .format(NUM_SEATS))
-            with(self.condition):
-                self.condition.notify_all()
+            #with(self.condition):
+            #    self.condition.notify_all()
 
-
+'''
 
 class SkiProblem():
 
@@ -232,9 +243,11 @@ class SkiProblem():
         time_spent = time_sum / len(skier_waiting_time)
         print("Tempo médio que o esquiador espera em fila: {} " .format(time_spent))
         print(" ")
-        taxa_aproveitamento = NUM_SKIERS / (len(cont_elevador) * 4)
+        taxa_aproveitamento = len(cont_skier) / (len(cont_elevator) * 4)
+        print(" ")
         print("Taxa de aproveitamento: {}" .format(taxa_aproveitamento))
         print(" ")
+        #print("Contadorzin: {} " .format(len(cont_elevador)))
 
     
 

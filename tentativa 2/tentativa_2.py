@@ -103,9 +103,6 @@ class Elevator(Thread):
                         for i in range(0, 3):
                             LT.pop(0)
                             NUM_SEATS = NUM_SEATS - 1
-                            #Tempo na fila
-                                    
-                            #LT = LT[:len(LT)-2]         #### Exception 
 
                         print(" ")
                         print("Saiu da fila LT")
@@ -115,14 +112,13 @@ class Elevator(Thread):
                         self.condition.wait()
                         continue
 
-                    #elif(lefttriple == False):  #LT vazio -> serve RT até ter pessoas suficientes em LT
+                    #LT vazio -> serve RT até ter pessoas suficientes em LT
                     elif(lefttriple == False):
                         if (len(RT) > 2 and NUM_SEATS > 2):
                             for i in range(0, 3):
                                 RT.pop(0)
                                 NUM_SEATS = NUM_SEATS - 1
-                                        
-                                #Tempo na fila
+
                             print(" ")
                             print("Saiu da fila RT")
                             print_filas_len()
@@ -169,8 +165,11 @@ class Elevator(Thread):
                             self.condition.wait()
                             continue
 
+                #Contador para quantas vezes o elevador subiu
+                cont_elevator.append(1)
 
                 #Fim da checagem de condições
+                #Acorda as threads em wait
                 with(self.condition):
                     self.condition.notify_all()
                                         
@@ -199,6 +198,7 @@ class SkiProblem():
         time_spent = time_sum / len(skier_waiting_time)
         print("Tempo médio que o esquiador espera em fila: {} " .format(time_spent))
         print(" ")
+
         #Cálculo da taxa de aproveitamento
         taxa_aproveitamento = len(cont_skier) / (len(cont_elevator) * 4)
         print(" ")

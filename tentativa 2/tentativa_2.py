@@ -5,15 +5,19 @@ import numpy as np
 
 NUM_SKIERS = 120
 #NUM_SEATS = 4
+#Lista p/ guardar os esquiadores que entraram no elevador
 cont_skier = []
+
+#Lista p/ guadar os incrementos de subida do elevador
 cont_elevator = []
 
+#Filas
 LS = []
 LT = []
 RT = []
 RS = []
 
-#
+#Lista p/ juntar o tempo de espera em fila dos esquiadores
 skier_waiting_time = []
 
 def print_filas():
@@ -83,6 +87,7 @@ class Elevator(Thread):
         #self.i = i
 
     def run(self):
+        #Variável p/ contar os esquiadores que entraram no elevador
         cont_skier.append(1)
         NUM_SEATS = 4
         with(self.condition):
@@ -92,7 +97,6 @@ class Elevator(Thread):
                 righttriple = False
 
                 flag0 = choice(["LT", "RT"])
-                #print("CHEGOU 1")
 
                 if (flag0 == "LT"):
                     if (len(LT) > 2 and NUM_SEATS > 2):
@@ -109,9 +113,8 @@ class Elevator(Thread):
 
                         lefttriple = True
                         self.condition.wait()
-                        #print("CHEGOU 2")
                         continue
-                        print("CHEGOU 2")
+
                     #elif(lefttriple == False):  #LT vazio -> serve RT até ter pessoas suficientes em LT
                     elif(lefttriple == False):
                         if (len(RT) > 2 and NUM_SEATS > 2):
@@ -127,7 +130,7 @@ class Elevator(Thread):
                             righttriple = True
                             self.condition.wait()
                             continue
-                        #print("CHEGOU 3")
+
                 #Caso LT e RT estejam vazias
                 elif (lefttriple == False and righttriple == False):
 
@@ -165,60 +168,13 @@ class Elevator(Thread):
                             rightsingle = True
                             self.condition.wait()
                             continue
-                            print("aqui era pra chegar k")
 
 
-
-                    #cont_skier.append(cont)
-                #print("chegou aq")
                 #Fim da checagem de condições
-                cont_elevator.append(1)
                 with(self.condition):
                     self.condition.notify_all()
                                         
                 break
-'''                else:
-                    #if (lefttriple == True and len(RS) > 0):
-                    if (lefttriple == True and rightsingle == True):
-                        RS.pop(0)
-                        NUM_SEATS = NUM_SEATS - 1
-                        #Tempo na fila
-                        print(" ")
-                        print("Saiu uma LT e uma RS")
-                        print_filas_len()
-                            
-                        self.condition.wait()
-                        continue
-
-                    #if(righttriple == True and len(LS) > 0):
-                    if (righttriple == True and leftsingle == True):
-                        LS.pop(0)
-                        NUM_SEATS = NUM_SEATS - 1
-                        #Tempo na fila
-                        print(" ")
-                        print("Saiu uma RT e uma LS")
-                        print_filas_len()
-                            
-                        self.condition.wait()
-                        continue
-                #print("AQ ")
-                #cont = cont + 1
-                #cont_elevador.append(cont)
-                #Fim da checagem de condições
-                #with(self.condition):
-                #    self.condition.notify_all()
-                    
-                #break
-
-            #cont_elevador = cont_elevador + 1
-            cont_skier.append(1)
-            #print("appendeus ")
-            #NUM_SEATS = 4
-            #print("NUM SEATS: {}" .format(NUM_SEATS))
-            #with(self.condition):
-            #    self.condition.notify_all()
-
-'''
 
 class SkiProblem():
 
@@ -238,20 +194,18 @@ class SkiProblem():
                 e.start()
                 #sleep(1)
         
-    
+        #Variáveis usadas para o cálculo do tempo médio em fila
         time_sum = sum(skier_waiting_time)
         time_spent = time_sum / len(skier_waiting_time)
         print("Tempo médio que o esquiador espera em fila: {} " .format(time_spent))
         print(" ")
+        #Cálculo da taxa de aproveitamento
         taxa_aproveitamento = len(cont_skier) / (len(cont_elevator) * 4)
         print(" ")
         print("Taxa de aproveitamento: {}" .format(taxa_aproveitamento))
         print(" ")
-        #print("Contadorzin: {} " .format(len(cont_elevador)))
-
     
 
-#if(__name__ == '__main__'):
-#    main()
+
 s = SkiProblem
 s.main()

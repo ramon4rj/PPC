@@ -1,5 +1,6 @@
 from threading import Condition, Thread
-from time import sleep, time
+from time import sleep
+import time
 from random import choice, randint
 import numpy as np
 
@@ -16,6 +17,7 @@ LS = []
 LT = []
 RT = []
 RS = []
+
 
 #Lista p/ juntar o tempo de espera em fila dos esquiadores
 skier_waiting_time = []
@@ -45,7 +47,7 @@ class Skier(Thread):
         #Esquiador chega p/ entrar na fila
         print("Esquiador chega na fila")
         print(" ")
-        start_waiting_time = time()
+        start_waiting_time = time.time()
 
         #Condições p/ escolha de fila
 
@@ -54,37 +56,37 @@ class Skier(Thread):
             LS.append(self.i)
             #print("Esquiador {} entrou na fila LS" .format(self))
             print("Esquiador {} entrou na fila LS" .format(self.i))
-            skier_waiting_time.append(time() - start_waiting_time)
+            skier_waiting_time.append(time.time() - start_waiting_time)
             print(" ")
             print_filas_len()
 
         elif (len(RS) < 2 * len(LT) and len(RS) < 2 * len(RT) and len(RS) <= len(LS)):
             RS.append(self.i)
             print("Esquiador {} entrou na fila RS" .format(self.i))
-            skier_waiting_time.append(time() - start_waiting_time)
+            skier_waiting_time.append(time.time() - start_waiting_time)
             print(" ")
             print_filas_len()
 
         elif (len(LT) <= len(RT)):
             LT.append(self.i)
             print("Esquiador {} entrou na fila LT".format(self.i))
-            skier_waiting_time.append(time() - start_waiting_time)
+            skier_waiting_time.append(time.time() - start_waiting_time)
             print(" ")
             print_filas_len()
 
         else:
             RT.append(self.i)
             print("Esquiador {} entrou na fila RT" .format(self.i))
-            skier_waiting_time.append(time() - start_waiting_time)
+            skier_waiting_time.append(time.time() - start_waiting_time)
             print(" ")
             print_filas_len()
 
 
 class Elevator(Thread):
-    def __init__(self, cv):
+    def __init__(self, cv, i):
         Thread.__init__(self)
         self.condition = cv
-        #self.i = i
+        self.i = i
 
     def run(self):
         #Variável p/ contar os esquiadores que entraram no elevador
@@ -168,12 +170,21 @@ class Elevator(Thread):
                 #Contador para quantas vezes o elevador subiu
                 cont_elevator.append(1)
 
+                if (self.i >= 113):
+                    print("SELF.i: {}" .format(self.i))
+                    while(len(RT) != 0):
+                        RS.append(RT[0])
+                    #for j in range(2):
+                    while(len(LT) != 0):
+                        LS.append(LT[0])
+
                 #Fim da checagem de condições
                 #Acorda as threads em wait
                 with(self.condition):
                     self.condition.notify_all()
                                         
                 break
+
 
 class SkiProblem():
 
@@ -189,7 +200,7 @@ class SkiProblem():
                 t.start()
                 sleep(1)
 
-                e = Elevator(cv)
+                e = Elevator(cv, i)
                 e.start()
                 #sleep(1)
         
@@ -205,6 +216,7 @@ class SkiProblem():
         print("Taxa de aproveitamento: {}" .format(taxa_aproveitamento))
         print(" ")
     
+        print("LEN cont skier: {}" .format(len(cont_skier)))
 
 
 s = SkiProblem

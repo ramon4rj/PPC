@@ -170,13 +170,17 @@ class Elevator(Thread):
                 #Contador para quantas vezes o elevador subiu
                 cont_elevator.append(1)
 
+                #Caso a fila tenha 7 esquiadores ainda a entrar, que configura 2 esquiadores nas duas triplas ( considerada assim vazia)
+                # e 3 distribuídos nas singles, adicionam-se os restantes das triplas nas singles e essas fazem a remoção
                 if (self.i >= 113):
-                    print("SELF.i: {}" .format(self.i))
+                    #print("SELF.i: {}" .format(self.i))
                     while(len(RT) != 0):
                         RS.append(RT[0])
+                        RT.pop(0)
                     #for j in range(2):
                     while(len(LT) != 0):
                         LS.append(LT[0])
+                        LT.pop(0)
 
                 #Fim da checagem de condições
                 #Acorda as threads em wait
@@ -213,10 +217,9 @@ class SkiProblem():
         #Cálculo da taxa de aproveitamento
         taxa_aproveitamento = len(cont_skier) / (len(cont_elevator) * 4)
         print(" ")
-        print("Taxa de aproveitamento: {}" .format(taxa_aproveitamento))
+        print("Taxa de aproveitamento: {}%" .format(taxa_aproveitamento))
         print(" ")
-    
-        print("LEN cont skier: {}" .format(len(cont_skier)))
+
 
 
 s = SkiProblem

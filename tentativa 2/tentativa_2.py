@@ -215,7 +215,7 @@ class SkiProblem():
         print(" ")
 
         #Cálculo da taxa de aproveitamento
-        taxa_aproveitamento = len(cont_skier) / (len(cont_elevator) * 4)
+        taxa_aproveitamento = (len(cont_skier) / (len(cont_elevator) * 4)) * 100
         print(" ")
         print("Taxa de aproveitamento: {}%" .format(taxa_aproveitamento))
         print(" ")
